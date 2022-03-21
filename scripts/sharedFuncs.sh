@@ -10,7 +10,7 @@ function package_installed() {
         else
             echo "false"
         fi
-    else    
+    else
         if [ "$pkginstalled" -eq 0 ];then
             show_message "package\033[1;36m $1\e[0m is installed..."
         else
@@ -58,7 +58,7 @@ function show_message2() {
 }
 
 function launcher() {
-    
+
     #create launcher script
     local launcher_path="$PWD/launcher.sh"
     local launcher_dest="$SCR_PATH/launcher"
@@ -67,11 +67,11 @@ function launcher() {
 
     if [ -f "$launcher_path" ];then
         show_message "launcher.sh detected..."
-        
+
         cp "$launcher_path" "$launcher_dest" || error "can't copy launcher"
-        
+
         sed -i "s|pspath|$SCR_PATH|g" "$launcher_dest/launcher.sh" && sed -i "s|pscache|$CACHE_PATH|g" "$launcher_dest/launcher.sh" || error "can't edit launcher script"
-        
+
         chmod +x "$SCR_PATH/launcher/launcher.sh" || error "can't chmod launcher script"
     else
         error "launcher.sh Note Found"
@@ -80,10 +80,10 @@ function launcher() {
     #create desktop entry
     local desktop_entry="$PWD/photoshop.desktop"
     local desktop_entry_dest="/home/$USER/.local/share/applications/photoshop.desktop"
-    
+
     if [ -f "$desktop_entry" ];then
         show_message "desktop entry detected..."
-       
+
         #delete desktop entry if exists
         if [ -f "$desktop_entry_dest" ];then
             show_message "desktop entry exist deleted..."
@@ -102,7 +102,7 @@ function launcher() {
     cp "$entry_icon" "$launcher_dest" || error "can't copy icon image"
     sed -i "s|photoshopicon|$launch_icon|g" "$desktop_entry_dest" || error "can't edit desktop entry"
     sed -i "s|photoshopicon|$launch_icon|g" "$launcher_dest/launcher.sh" || error "can't edit launcher script"
-    
+
     #create photoshop command
     show_message "create photoshop command..."
     if [ -f "/usr/local/bin/photoshop" ];then
@@ -154,7 +154,7 @@ function set_dark_mod() {
     for i in "${colorarray[@]}";do
         echo "$i" >> "$WINE_PREFIX/user.reg"
     done
-    show_message "set dark mode for wine..." 
+    show_message "set dark mode for wine..."
     unset colorarray
 }
 
@@ -177,28 +177,28 @@ function download_component() {
                 return 0
             else
                 show_message "md5 is not match"
-                rm $1 
+                rm $1
             fi
-        else   
+        else
             show_message "downloading $4 ..."
             ariapkg=$(package_installed aria2c "summary")
             curlpkg=$(package_installed curl "summary")
-            
-            if [ "$ariapkg" == "true" ];then
-                show_message "using aria2c to download $4"
-                aria2c -c -x 8 -d "$CACHE_PATH" -o $4 $3
-                
-                if [ $? -eq 0 ];then
-                    notify-send "Photoshop CC" "$4 download completed" -i "download"
-                fi
 
-            elif [ "$curlpkg" == "true" ];then
+            # if [ "$ariapkg" == "true" ];then
+            #     show_message "using aria2c to download $4"
+            #     aria2c -c -x 8 -d "$CACHE_PATH" -o $4 $3
+
+            #     if [ $? -eq 0 ];then
+            #         notify-send "Photoshop CC" "$4 download completed" -i "download"
+            #     fi
+
+            if [ "$curlpkg" == "true" ];then
                 show_message "using curl to download $4"
-                curl $3 -o $1
+                curl --insecure $3 -o $1
             else
                 show_message "using wget to download $4"
                 wget --no-check-certificate "$3" -P "$CACHE_PATH"
-                
+
                 if [ $? -eq 0 ];then
                     notify-send "Photoshop CC" "$4 download completed" -i "download"
                 fi
@@ -223,7 +223,7 @@ function check_arg() {
         d)
             PARAMd="$OPTARG"
             SCR_PATH=$(readlink -f "$PARAMd")
-            
+
             dashd=1
             echo "install path is $SCR_PATH"
             ;;
@@ -235,7 +235,7 @@ function check_arg() {
             ;;
         h)
             usage
-            ;; 
+            ;;
         *)
             echo "wrong argument"
             exit 1
